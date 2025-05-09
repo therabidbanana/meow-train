@@ -1,4 +1,5 @@
-APP_NAME := test
+APP_NAME := meow-train
+PUBLISHER := therabidbanana
 
 compile: source/**/*.fnl
 	fennel -c --require-as-include --no-compiler-sandbox source/main.fnl > source/main.lua
@@ -9,6 +10,9 @@ build: compile
 
 launch: build
 	playdate ${APP_NAME}.pdx
+
+package: build
+	zip -vr ${APP_NAME}.pdx.zip ${APP_NAME}.pdx/*
 
 love-compile: source/**/*.fnl
 	fennel --add-package-path './support/?.lua' support/build-font.fnl
@@ -32,3 +36,14 @@ love-serve: love-web
 
 clean:
 	rm -rf ./source/main.lua ./${APP_NAME}.pdx dist ./${APP_NAME}.love
+
+publish-web: love-web
+	butler push dist ${PUBLISHER}/${APP_NAME}:web
+
+publish-love: love-package
+	butler push ${APP_NAME}.love ${PUBLISHER}/${APP_NAME}:love
+
+publish-playdate: package
+	butler push ${APP_NAME}.pdx.zip ${PUBLISHER}/${APP_NAME}:playdate
+
+publish-all: publish-web publish-love publish-playdate
