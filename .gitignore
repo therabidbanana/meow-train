@@ -1,0 +1,8 @@
+/*.pdx
+.DS_Store
+source/**.lua
+*.love
+/.sentry-native/*
+dist/
+node_modules/
+fonts/*.bmfnt
