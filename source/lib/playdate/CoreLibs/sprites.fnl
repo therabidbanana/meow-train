@@ -52,14 +52,7 @@
                  (playdate.graphics.setDrawOffset sprite.x sprite.y)
                  (sprite:draw 0 0)
                  )
-               ;; We want to draw offset if using image
-               (?. sprite :image)
-               (sprite:draw sprite.x sprite.y)
-               (do
-                 (playdate.graphics.setDrawOffset sprite.x sprite.y)
-                 (sprite:draw 0 0)
-                 )
-               )
+               (sprite:draw sprite.x sprite.y))
            (playdate.graphics.popContext)
            )))
    )
