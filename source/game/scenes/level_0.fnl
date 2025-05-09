@@ -3,32 +3,33 @@
 
 (deflevel :level_0
   [entity-map (require :source.game.entities.core)
-   ;; ldtk (require :source.lib.ldtk.loader)
-   {: prepare-level!} (require :source.lib.level)
+   {: build! : stage-exit! : stage-draw! : stage-tick!} (require :source.game.scenes.level_builder)
    $ui (require :source.lib.ui)
    pd playdate
    gfx pd.graphics]
 
-  (fn enter! [$]
-    (let [
-          ;; Option 1 - Loads at runtime
-          ;; loaded (prepare-level! (ldtk.load-level {:level 0}) entity-map)
-          ;; Option 2 - relies on deflevel compiling
-          loaded (prepare-level! level_0 entity-map)
-          ]
-      loaded
-      )
+  (fn enter! [$ game-state]
+    (let [state (build! level_0)]
+      (tset $ :state state)))
+
+  (fn exit! [$ game-state]
+    (stage-exit! $)
+    (tset $ :state {})
+    (playdate.graphics.setDrawOffset 0 0)
     )
 
-  (fn exit! [$])
+  (fn draw! [$scene] (stage-draw! $scene))
 
-  (fn tick! [$]
-    (if ($ui:active?) ($ui:tick!)
-        (gfx.sprite.performOnAllSprites (fn react-each [ent]
-                                          (if (?. ent :react!) (ent:react!))))))
-  (fn draw! [$]
-    ;; ($.layer.tilemap:draw 0 0)
-    ($ui:render!)
+  (fn tick! [{: state &as $scene}]
+    (stage-tick! $scene))
+
+  (fn debug-draw! [$]
+    (gfx.sprite.performOnAllSprites
+     (fn [ent]
+       (if ent.collisionBox
+           (gfx.drawRoundRect ent.collisionBox 1)
+           ;; (gfx.drawCircleInRect ent.x ent.y ent.width ent.height 1)
+           )))
     )
   )
 

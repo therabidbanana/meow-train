@@ -5,6 +5,5 @@ source/**.lua
 /.sentry-native/*
 dist/
 node_modules/
-*.pdx
-*.pdx.zip
-*.bmfnt
+/*.pdx.zip
+source/assets/fonts/*.bmfnt
