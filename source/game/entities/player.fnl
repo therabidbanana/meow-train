@@ -1,4 +1,4 @@
-(import-macros {: inspect : defns : div} :source.lib.macros)
+(import-macros {: inspect : defns : div : clamp} :source.lib.macros)
 
 (defns :player
   [pressed? playdate.buttonIsPressed
@@ -9,17 +9,20 @@
    anim (require :source.lib.animation)]
 
   (fn react! [{: state : height : x : y : width &as self} $scene]
-    (if (justpressed? playdate.kButtonB) (self:boost!))
-    (let [dx (if (pressed? playdate.kButtonLeft)
-                 (* -1 state.speed)
+    (let [
+          dx (if (pressed? playdate.kButtonLeft)
+                 -1
                  (pressed? playdate.kButtonRight)
-                 (* 1 state.speed)
+                 1
                  0)
           dy (if (pressed? playdate.kButtonUp)
-                 (* -1 state.speed)
+                 -1
                  (pressed? playdate.kButtonDown)
-                 (* 1 state.speed)
+                 1
                  0)
+          _ (if (justpressed? playdate.kButtonB) (self:boost! dx dy))
+          dx (+ state.accel-x dx)
+          dy (+ state.accel-y dy)
           dx      (if (and (>= (+ x width) $scene.state.stage-width) (> dx 0)) 0
                       (and (<= x 0) (< dx 0)) 0
                       dx)
@@ -33,6 +36,8 @@
                                 _ [(+ x (div width 2)) (+ 8 height y)]) ;; 40 for height / width of sprite + 8
           [facing-sprite & _] (gfx.sprite.querySpritesAtPoint facing-x facing-y)
           ]
+      (tset state :meter (clamp 0 (- state.meter state.speed) 200))
+      ;; Figure out how to counteract accel with drag
       (tset self :state :dx dx)
       (tset self :state :dy dy)
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
@@ -45,6 +50,21 @@
       )
     self)
 
+  (fn boost! [{ : state &as self} dx dy]
+    (let [meter (+ state.meter 10)
+          boosted? (> meter 50)
+          meter (if boosted?
+                    (- meter 50)
+                    meter)]
+      (tset state :meter meter)
+      (if boosted?
+          (do
+            (tset state :accel-x (clamp -4 (+ dx state.accel-x) 4))
+            (tset state :accel-y (clamp -4 (+ dy state.accel-y) 4))
+            )
+          ))
+    )
+
   (fn update [{:state {: animation : dx : dy : walking?} &as self}]
     (let [target-x (+ dx self.x)
           target-y (+ dy self.y)
@@ -52,14 +72,14 @@
       (if walking?
          (animation:transition! :walking)
          (animation:transition! :standing {:if :walking})))
-    (self:markDirty)
+    (self:setImage (animation:getImage))
     )
 
-  (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
-    ;; (love.graphics.rectangle "fill" x y w h)
-    ;; Playdate version weird here:
-    (animation:draw x y)
-    )
+  ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
+  ;;   ;; (love.graphics.rectangle "fill" x y w h)
+  ;;   ;; Playdate version weird here:
+  ;;   (animation:draw x y)
+  ;;   )
 
   (fn collisionResponse [self other]
     (other:collisionResponse))
@@ -80,6 +100,9 @@
       (tset player :draw draw)
       (tset player :update update)
       (tset player :react! react!)
-      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true})
+      (tset player :boost! boost!)
+      (tset player :state {: animation :speed 2 :dx 0 :dy 0
+                           :accel-x 0 :accel-y 0
+                           :visible true :meter 1})
       player)))
 

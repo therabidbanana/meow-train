@@ -33,11 +33,12 @@
       (tset self :state :dx 0)
       (tset self :state :dy 0)
       (if (> count 0) (self:->stop!))
-      (self:markDirty))
+      (self:markDirty)
+      (self:setImage (animation:getImage)))
     )
 
-  (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
-    (animation:draw x y))
+  ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
+  ;;   (animation:draw x y))
 
   ;; (fn collisionResponse [self other]
   ;;   (other:collisionResponse))

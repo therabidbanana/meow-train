@@ -46,4 +46,4 @@
                        (if (?. v :player?) v)) 1)
           ]
       {: player : stage-width : stage-height : grid-w}
-     )))
+      )))
