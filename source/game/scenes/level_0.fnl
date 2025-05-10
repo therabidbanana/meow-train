@@ -9,7 +9,7 @@
    gfx pd.graphics]
 
   (fn enter! [$ game-state]
-    (let [state (build! level_0)]
+    (let [state (build! level_0 game-state)]
       (tset $ :state state)))
 
   (fn exit! [$ game-state]

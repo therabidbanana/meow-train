@@ -58,6 +58,7 @@
             ;; NOTE: Skips unknown entities instead of error
             entity (if entity-mod
                        (entity-mod.new! x y {: fields : tile-h : tile-w : width : height
+                                             :game-state (or (?. layer-details :game-state) {})
                                              :layer-details (or (?. layer-details id) {})}))]
         (if (?. entity :add) (entity:add))
         entity)))

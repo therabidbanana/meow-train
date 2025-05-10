@@ -8,17 +8,13 @@
       gfx pd.graphics]
 
   (local state {})
-  (fn enter! [$]
-    ($ui:open-menu! {:options [{:text "Foo" :action #($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2") :nametag "LovingNameTAG"})}
-                               {:text "Bar [!]" :action #(scene-manager:select! :level_0)}
-                               {:text "Quux" :action #($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")})}
-                               {:text "Qux" :keep-open? true}
-                               {:text "Corge"}
-                               {:text "Grault"}
-                               {:text "Garply"}
-                               {:text "Corge"}
-                               {:text "Grault"}
-                               {:text "Garply"}
+  (fn enter! [$ game-state]
+    ($ui:open-menu! {:options [{:text "V1" :action #(do (tset game-state :run-algo :algo-1)
+                                                        (inspect game-state)
+                                                        (scene-manager:select! :level_0))}
+                               {:text "v2" :action #(do (tset game-state :run-algo :algo-2)
+                                                        (inspect game-state)
+                                                        (scene-manager:select! :level_0))}
                                ]})
     ;; (tset $ :state :listview (testScroll pd gfx))
     )

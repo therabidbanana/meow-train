@@ -29,7 +29,7 @@
     ($ui:render!)
     )
 
-  (fn build! [level]
+  (fn build! [level game-state]
     (let [tile-size 32
           grid-w (div level.w tile-size)
           grid-h (div level.h tile-size)
@@ -38,7 +38,8 @@
           {: stage-width : stage-height
            &as loaded} (prepare-level! level
                                        entity-map
-                                       {:tiles   {:z-index -10}})
+                                       {:game-state game-state
+                                        :tiles      {:z-index -10}})
           wall-sprites (icollect [_ v (ipairs (playdate.graphics.sprite.getAllSprites))]
                          (if (?. v :wall?) v))
 
