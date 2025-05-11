@@ -45,6 +45,8 @@
 
           player (?. (icollect [_ v (ipairs loaded.entities)]
                        (if (?. v :player?) v)) 1)
+
+          hud (-> (entity-map.hud.new! player) (: :add))
           ]
-      {: player : stage-width : stage-height : grid-w}
+      {: player : hud : stage-width : stage-height : grid-w}
       )))

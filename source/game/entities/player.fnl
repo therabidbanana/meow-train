@@ -9,32 +9,93 @@
    anim (require :source.lib.animation)]
 
   (fn algo-1 [{: state} dir-x dir-y boost-factor]
-    (let [meter (+ state.meter boost-factor)
-          meter (* meter 0.95)
-          meter (if (> meter 0.1) meter 0)
-          extra-x (if (> meter 0) (* dir-x meter) 0)
-          extra-y (if (> meter 0) (* dir-y meter) 0)]
+    (let [mx state.mx
+          my state.my
+          boost-ticks (clamp 0 (- (+ state.boost-ticks (* boost-factor 20)) 1) 120)
+          meter (+ (* boost-factor
+                      (if (> state.meter 80) 1
+                          (> state.meter 60) 2
+                          (> state.meter 40) 3
+                          (> state.meter 20) 5
+                          6)
+                      ) state.meter)
+          meter (if (< boost-ticks 1)
+                    (- meter 0.25)
+                    meter)
+          boost-ticks (if (< boost-ticks 1)
+                          0
+                          (- boost-ticks 1))
+          meter (clamp 0 meter 100)
+          boost (if (> meter 80) 2
+                    (> meter 60) 1.8
+                    (> meter 40) 1.3
+                    (> meter 20) 1
+                    0.8)
+          drag (if (> meter 80) 0.95
+                   (> meter 60) 0.90
+                   (> meter 40) 0.85
+                   (> meter 20) 0.8
+                   0.5)
+          mx (* (+ (* 0.2 dir-x) mx) drag)
+          my (* (+ (* 0.2 dir-y) my) drag)
+          mx (if (< -0.1 mx 0.1) 0 mx)
+          my (if (< -0.1 my 0.1) 0 my)
+          ]
       (tset state :meter meter)
-      (values (/ (+ extra-x dir-x) 1.2) (/ (+ extra-y dir-y) 1.2)))
+      (tset state :boost-ticks boost-ticks)
+      (tset state :mx (clamp -3 mx 3))
+      (tset state :my (clamp -3 my 3))
+      (values (/ (+ mx (* dir-x boost)) 1) (/ (+ my (* dir-y boost)) 1)))
     )
 
   (fn algo-2 [{: state} dir-x dir-y boost-factor]
-    (let [mx (if (> boost-factor 0) (+ state.mx (* dir-x boost-factor))
-                 (* state.mx 0.9))
-          my (if (> boost-factor 0) (+ state.my (* dir-y boost-factor))
-                 (* state.my 0.9))
+    (let [mx state.mx
+          my state.my
+          boost-ticks (clamp 0 (- (+ state.boost-ticks (* boost-factor 20)) 1) 60)
+          meter (+ (* boost-factor 10) state.meter)
+          meter (if (< boost-ticks 1)
+                    (- meter 1)
+                    meter)
+          boost-ticks (if (< boost-ticks 1)
+                          0
+                          (- boost-ticks 1))
+          meter (clamp 0 meter 100)
+          boost (if (> meter 80) 3
+                    (> meter 60) 2
+                    (> meter 40) 1.5
+                    (> meter 20) 1.2
+                    0.8)
+          mx (* (+ (* 0.2 (* dir-x boost)) mx) 0.9)
+          my (* (+ (* 0.2 (* dir-y boost)) my) 0.9)
           mx (if (< -0.1 mx 0.1) 0 mx)
-          my (if (< -0.1 my 0.1) 0 my)]
-      (tset state :mx (clamp -4 mx 4))
-      (tset state :my (clamp -4 my 4))
-      (values (/ (+ mx dir-x) 1.2) (/ (+ my dir-y) 1.2)))
+          my (if (< -0.1 my 0.1) 0 my)
+          ]
+      (tset state :meter meter)
+      (tset state :boost-ticks boost-ticks)
+      (tset state :mx (clamp -3 mx 3))
+      (tset state :my (clamp -3 my 3))
+      (values (/ (+ mx (* dir-x boost)) 1) (/ (+ my (* dir-y boost)) 1)))
     )
 
   (fn algo-3 [{: state} dir-x dir-y boost-factor]
-    (let []
+    (let [mx state.mx
+          my state.my
+          meter (+ (* boost-factor 10) state.meter)
+          meter (clamp 0 (- meter 1) 100)
+          boost (if (> meter 80) 3
+                    (> meter 60) 2.5
+                    (> meter 40) 2
+                    (> meter 20) 1.5
+                    1)
+          mx (* (+ (* 0.2 dir-x) mx) 0.9)
+          my (* (+ (* 0.2 dir-y) my) 0.9)
+          mx (if (< -0.1 mx 0.1) 0 mx)
+          my (if (< -0.1 my 0.1) 0 my)
+          ]
+      (tset state :meter meter)
       (tset state :mx (clamp -4 mx 4))
       (tset state :my (clamp -4 my 4))
-      (values (/ (+ mx dir-x) 1.2) (/ (+ my dir-y) 1.2)))
+      (values (/ (+ mx (* dir-x boost)) 1) (/ (+ my (* dir-y boost)) 1)))
     )
 
   (fn react! [{: state : height : x : y : width : run-algo &as self} $scene]
@@ -51,8 +112,9 @@
 
           (cranked accel) (playdate.getCrankChange)
           boost-factor (if (justpressed? playdate.kButtonB) 1
-                           (> accel 1) 0.2
-                           (< accel -1) 0.2
+                           (> (math.abs accel) 10) 0.15
+                           (> (math.abs accel) 5) 0.12
+                           (> (math.abs accel) 1) 0.1
                            0
                        )
           (dx dy)  (run-algo self dir-x dir-y boost-factor)
@@ -101,8 +163,9 @@
           (do
             (tset self :state :real-x x)
             (tset self :state :real-y y)
-            (tset self :state :accel-x 0)
-            (tset self :state :accel-y 0)
+            (tset self :state :mx 0)
+            (tset self :state :my 0)
+            (tset self :state :meter (/ self.state.meter 2))
             )
           (do
             (tset self :state :real-x new-x)
@@ -122,7 +185,9 @@
   ;;   )
 
   (fn collisionResponse [self other]
-    (other:collisionResponse))
+    ;; (other:collisionResponse)
+    :bounce
+    )
 
   (fn new! [x y {: tile-w : tile-h : game-state &as extras}]
     (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
@@ -143,10 +208,11 @@
       (tset player :boost! boost!)
       (tset player :algo-1 algo-1)
       (tset player :algo-2 algo-2)
+      (tset player :algo-3 algo-3)
       (tset player :run-algo (?. player game-state.run-algo))
       (tset player :state {: animation :speed 2
                            :dx 0 :dy 0
-                           :mx 0 :my 0 :meter 1
+                           :mx 0 :my 0 :meter 1 :boost-ticks 0
                            :real-x x :real-y y
                            :visible true})
       player)))
