@@ -6,3 +6,4 @@ source/**.lua
 dist/
 node_modules/
 /*.pdx.zip
+/source/assets/fonts/*.bmfnt

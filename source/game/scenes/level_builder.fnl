@@ -43,10 +43,17 @@
           wall-sprites (icollect [_ v (ipairs (playdate.graphics.sprite.getAllSprites))]
                          (if (?. v :wall?) v))
 
-          player (?. (icollect [_ v (ipairs loaded.entities)]
-                       (if (?. v :player?) v)) 1)
-
+          doors (icollect [_ v (ipairs (playdate.graphics.sprite.getAllSprites))]
+                  (if (?. v :door?) v))
+          player (if (?. game-state :player) (let [door (?. (icollect [_ v (ipairs doors)]
+                                                              (if (= v.level game-state.player.state.exit-from) v)) 1)
+                                                   door (or door (?. doors 1))]
+                                               (game-state.player:replace-at-exit door.exit)
+                                               game-state.player)
+                     (?. (icollect [_ v (ipairs loaded.entities)]
+                           (if (?. v :player?) v)) 1))
           hud (-> (entity-map.hud.new! player) (: :add))
           ]
+      (tset game-state :player player)
       {: player : hud : stage-width : stage-height : grid-w}
       )))

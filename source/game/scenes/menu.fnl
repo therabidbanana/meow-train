@@ -10,13 +10,10 @@
   (local state {})
   (fn enter! [$ game-state]
     ($ui:open-menu! {:options [{:text "V1" :action #(do (tset game-state :run-algo :algo-1)
-                                                        (inspect game-state)
                                                         (scene-manager:select! :level_0))}
                                {:text "v2" :action #(do (tset game-state :run-algo :algo-2)
-                                                        (inspect game-state)
                                                         (scene-manager:select! :level_0))}
                                {:text "V3" :action #(do (tset game-state :run-algo :algo-3)
-                                                        (inspect game-state)
                                                         (scene-manager:select! :level_0))}
                                ]})
     ;; (tset $ :state :listview (testScroll pd gfx))
