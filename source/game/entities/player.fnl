@@ -196,9 +196,10 @@
          (tset self :state :real-y new-y)
             )
           )
-      (if walking?
-         (animation:transition! :walking)
-         (animation:transition! :standing {:if :walking})))
+      ;; (if walking?
+      ;;    (animation:transition! :walking)
+      ;;    (animation:transition! :standing {:if :walking}))
+      )
     (self:setImage (animation:getImage))
     )
 
@@ -216,15 +217,12 @@
 
   (fn new! [x y {: tile-w : tile-h : game-state &as extras}]
     (if (not (?. game-state :player))
-        (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
-              animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300 :transition-to :blinking}
-                                                    {:state :blinking :start 2 :end 3 :delay 300 :transition-to :pace}
-                                                    {:state :pace :start 4 :end 5 :delay 500 :transition-to :standing}
-                                                    {:state :walking :start 4 :end 5}]})
+        (let [image (gfx.imagetable.new :assets/images/player)
+              animation (anim.new {: image :states [{:state :standing :start 1 :end 1}]})
               player (gfx.sprite.new)]
           (player:setCenter 0 0)
-          (player:setBounds x y 32 32)
-          (player:setCollideRect 6 1 18 30)
+          (player:setBounds x y 48 48)
+          (player:setCollideRect 0 0 48 48)
           (player:setGroups [1])
           (player:setCollidesWithGroups [3 4])
           (tset player :player? true)
