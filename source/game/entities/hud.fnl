@@ -26,16 +26,16 @@
       ))
 
   (fn draw-timer [timer]
-    (let [fill (* (/ timer 100) 220)
-          rect (playdate.geometry.rect.new 220 10 8 220)
-          bar (playdate.geometry.rect.new 222 13 4 fill)
-          ]
+    (let [seconds (div timer 30)
+          rect (playdate.geometry.rect.new 300 10 100 20)]
       (gfx.setColor gfx.kColorWhite)
       (gfx.fillRoundRect rect 3)
       (gfx.setColor gfx.kColorBlack)
       (gfx.setLineWidth 1)
       (gfx.drawRoundRect rect 3)
-      (gfx.fillRoundRect bar 3)
+      (gfx.drawText (.. seconds "s left") ;;(rect:insetBy 6 2)
+                    306 12
+                    )
       ))
 
   (fn draw [{:state {: player : meter : timer : active-timer?} &as self}]
