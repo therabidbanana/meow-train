@@ -135,14 +135,17 @@
                                 :up [(+ x (div width 2)) (- y 8)]
                                 _ [(+ x (div width 2)) (+ 8 height y)]) ;; 40 for height / width of sprite + 8
           [facing-sprite & _] (gfx.sprite.querySpritesAtPoint facing-x facing-y)
+          pickup-time (if (?. state :picked-up) (- (?. state :pickup-time) 1)
+                          0)
           ]
       ;; Figure out how to counteract accel with drag
       (tset self :state :dx dx)
       (tset self :state :dy dy)
+      (tset self :state :pickup-time pickup-time)
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
 
-      (if (playdate.buttonJustPressed playdate.kButtonA)
-          (scene-manager:select! :menu))
+      ;; (if (playdate.buttonJustPressed playdate.kButtonA)
+      ;;     (scene-manager:select! :menu))
       (if (and (playdate.buttonJustPressed playdate.kButtonA)
                facing-sprite)
           ($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")}))
@@ -169,17 +172,28 @@
          (tset self :state :exit-from door.current)
          (scene-manager:select! door.level)
          )
+       (and (> count 0) (?. collisions 1 :other :pickup?))
+       (do
+         (tset self :state :real-x new-x)
+         (tset self :state :real-y new-y)
+         (tset self :state :picked-up true)
+         (tset self :state :pickup-time (* 30 90)))
+       (and (> count 0) (?. collisions 1 :other :dropoff?))
+       (do
+         (tset self :state :real-x new-x)
+         (tset self :state :real-y new-y)
+         (tset self :state :picked-up false))
        (> count 0)
-          (do
-            (tset self :state :real-x x)
-            (tset self :state :real-y y)
-            (tset self :state :mx 0)
-            (tset self :state :my 0)
-            (tset self :state :meter (/ self.state.meter 2))
-            )
-          (do
-            (tset self :state :real-x new-x)
-            (tset self :state :real-y new-y)
+       (do
+         (tset self :state :real-x x)
+         (tset self :state :real-y y)
+         (tset self :state :mx 0)
+         (tset self :state :my 0)
+         (tset self :state :meter (/ self.state.meter 2))
+         )
+       (do
+         (tset self :state :real-x new-x)
+         (tset self :state :real-y new-y)
             )
           )
       (if walking?
@@ -195,7 +209,7 @@
   ;;   )
 
   (fn collisionResponse [self other]
-    (if (?. other :door?)
+    (if (or other.door? other.dropoff? other.pickup?)
         :overlap
         :bounce)
     )
@@ -216,6 +230,8 @@
           (tset player :player? true)
           (tset player :draw draw)
           (tset player :replace-at-exit replace-at-exit)
+          (tset player :collisionResponse collisionResponse)
+
           (tset player :update update)
           (tset player :react! react!)
           (tset player :boost! boost!)
