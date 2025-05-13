@@ -26,9 +26,6 @@
     (let [target-x (+ dx self.x)
           target-y (+ dy self.y)
           (x y collisions count) (self:moveWithCollisions target-x target-y)]
-      (if walking?
-          (animation:transition! :walking)
-          (animation:transition! :standing {:if :walking}))
       (tset self :state :dx 0)
       (tset self :state :dy 0)
       (if (> count 0) (self:->stop!))
@@ -43,16 +40,13 @@
   ;;   (other:collisionResponse))
 
   (fn new! [x y {: tile-h : tile-w}]
-    (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
-          animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300 :transition-to :blinking}
-                                                {:state :blinking :start 2 :end 3 :delay 300 :transition-to :pace}
-                                                {:state :pace :start 4 :end 5 :delay 500 :transition-to :standing}
-                                                {:state :walking :start 4 :end 5}]})
+    (let [image (gfx.imagetable.new :assets/images/frog-woman)
+          animation (anim.new {: image :states [{:state :standing :start 1 :end 1}]})
           player (gfx.sprite.new)]
       (player:setCenter 0 0)
-      (player:setBounds x y 32 32)
+      (player:setBounds x y 48 48)
       ;; (player:setCollideRect 6 1 18 30)
-      (player:setCollideRect 4 8 24 24)
+      (player:setCollideRect 12 12 24 24)
       (player:setGroups [3])
       (player:setCollidesWithGroups [1 4])
       (tset player :draw draw)

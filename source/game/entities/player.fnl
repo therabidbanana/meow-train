@@ -66,47 +66,61 @@
                           0
                           (- boost-ticks 1))
           meter (clamp 0 meter 100)
-          boost (if (> meter 80) 2
-                    (> meter 60) 1.8
-                    (> meter 40) 1.3
-                    (> meter 20) 1
-                    0.8)
+          boost (if (> meter 80) 0.8
+                    (> meter 60) 0.6
+                    (> meter 40) 0.5
+                    (> meter 20) 0.4
+                    0.3)
           drag (if (> meter 80) 0.95
                    (> meter 60) 0.90
                    (> meter 40) 0.85
                    (> meter 20) 0.8
-                   0.5)
-          mx (* (+ (/ (* boost dir-x) 5) mx) drag)
-          my (* (+ (/ (* boost dir-y) 5) my) drag)
-          mx (if (< -0.1 mx 0.1) 0 mx)
-          my (if (< -0.1 my 0.1) 0 my)
+                   0.8)
+          mx (* (+ (* boost dir-x) mx) drag)
+          my (* (+ (* boost dir-y) my) drag)
+          mx (if (< -0.1 mx 0.1) 0 (clamp -5 mx 5))
+          my (if (< -0.1 my 0.1) 0 (clamp -5 my 5))
           ]
       (tset state :meter meter)
       (tset state :boost-ticks boost-ticks)
-      (tset state :mx (clamp -4 mx 4))
-      (tset state :my (clamp -4 my 4))
-      (values (/ (+ mx (* dir-x boost)) 1) (/ (+ my (* dir-y boost)) 1)))
+      (tset state :mx (clamp -5 mx 5))
+      (tset state :my (clamp -5 my 5))
+      (values mx my))
     )
 
   (fn algo-3 [{: state} dir-x dir-y boost-factor]
     (let [mx state.mx
           my state.my
-          meter (+ (* boost-factor 10) state.meter)
-          meter (clamp 0 (- meter 1) 100)
-          boost (if (> meter 80) 3
-                    (> meter 60) 2.5
+          boost-ticks (clamp 0 (- (+ state.boost-ticks (* boost-factor 20)) 1) 120)
+          meter (+ (* boost-factor
+                      (if (> state.meter 80) 1
+                          (> state.meter 60) 2
+                          (> state.meter 40) 3
+                          (> state.meter 20) 5
+                          6)
+                      ) state.meter)
+          meter (if (< boost-ticks 1)
+                    (- meter 0.25)
+                    meter)
+          boost-ticks (if (< boost-ticks 1)
+                          0
+                          (- boost-ticks 1))
+          meter (clamp 0 meter 100)
+          speed (if (> meter 80) 4
+                    (> meter 60) 3
                     (> meter 40) 2
-                    (> meter 20) 1.5
-                    1)
-          mx (* (+ (* 0.2 dir-x) mx) 0.9)
-          my (* (+ (* 0.2 dir-y) my) 0.9)
-          mx (if (< -0.1 mx 0.1) 0 mx)
-          my (if (< -0.1 my 0.1) 0 my)
+                    (> meter 20) 1
+                    0.8)
+          vx (* speed mx)
+          vy (* speed my)
+          new-mx (/ (+ dir-x vx) 2)
+          new-my (/ (+ dir-y vy) 2)
           ]
       (tset state :meter meter)
-      (tset state :mx (clamp -4 mx 4))
-      (tset state :my (clamp -4 my 4))
-      (values (/ (+ mx (* dir-x boost)) 1) (/ (+ my (* dir-y boost)) 1)))
+      (tset state :boost-ticks boost-ticks)
+      (tset state :mx new-mx)
+      (tset state :my new-my)
+      (values vx vy))
     )
 
   (fn react! [{: state : height : x : y : width : run-algo &as self} $scene]
@@ -222,7 +236,7 @@
               player (gfx.sprite.new)]
           (player:setCenter 0 0)
           (player:setBounds x y 48 48)
-          (player:setCollideRect 0 0 48 48)
+          (player:setCollideRect 8 18 30 30)
           (player:setGroups [1])
           (player:setCollidesWithGroups [3 4])
           (tset player :player? true)
