@@ -8,16 +8,7 @@
    anim (require :source.lib.animation)]
 
   (fn react! [{: state : height : x : y : tile-w : tile-h : width &as self}]
-    (let [(dx dy) (self:tile-movement-react! state.speed)]
-      (if (and (= dx 0) (= dy 0))
-          (case (math.random 0 100)
-            1 (self:->left!)
-            2 (self:->right!)
-            3 (self:->up!)
-            4 (self:->down!)
-            _ nil))
-      (tset self :state :dx dx)
-      (tset self :state :dy dy)
+    (let [dx 0 dy 0]
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
       )
     self)
@@ -31,9 +22,12 @@
           (animation:transition! :standing {:if :walking}))
       (tset self :state :dx 0)
       (tset self :state :dy 0)
-      (if (> count 0) (self:->stop!))
       (self:markDirty)
       (self:setImage (animation:getImage)))
+    )
+
+  (fn interact! [self player]
+    ($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")})
     )
 
   ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
@@ -42,7 +36,7 @@
   ;; (fn collisionResponse [self other]
   ;;   (other:collisionResponse))
 
-  (fn new! [x y {: tile-h : tile-w}]
+  (fn new! [x y]
     (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
           animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300 :transition-to :blinking}
                                                 {:state :blinking :start 2 :end 3 :delay 300 :transition-to :pace}
@@ -58,10 +52,7 @@
       (tset player :draw draw)
       (tset player :update update)
       (tset player :react! react!)
-      (tset player :tile-h tile-h)
-      (tset player :tile-w tile-w)
-      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true
-                           :tile-x (div x tile-w) :tile-y (div y tile-h)})
-      (tile.add! player {: tile-h : tile-w})
+      (tset player :interact! interact!)
+      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true})
       player)))
 

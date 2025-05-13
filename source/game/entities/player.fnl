@@ -4,6 +4,7 @@
   [pressed? playdate.buttonIsPressed
    justpressed? playdate.buttonJustPressed
    gfx playdate.graphics
+   vector playdate.geometry.vector2D
    $ui (require :source.lib.ui)
    scene-manager (require :source.lib.scene-manager)
    anim (require :source.lib.animation)]
@@ -19,7 +20,9 @@
                           (> state.meter 20) 5
                           6)
                       ) state.meter)
-          meter (if (< boost-ticks 1)
+          meter (if (and (< boost-ticks 1) (= 0 (+ (* dir-x dir-x) (* dir-y dir-y))))
+                    (- meter 2)
+                    (< boost-ticks 1)
                     (- meter 0.25)
                     meter)
           boost-ticks (if (< boost-ticks 1)
@@ -97,29 +100,31 @@
                           (> state.meter 60) 2
                           (> state.meter 40) 3
                           (> state.meter 20) 5
-                          6)
+                          10)
                       ) state.meter)
-          meter (if (< boost-ticks 1)
+          meter (if (and (< boost-ticks 1) (= 0 (+ (* dir-x dir-x) (* dir-y dir-y))))
+                    (- meter 2)
+                    (< boost-ticks 1)
                     (- meter 0.25)
                     meter)
           boost-ticks (if (< boost-ticks 1)
                           0
                           (- boost-ticks 1))
           meter (clamp 0 meter 100)
-          speed (if (> meter 80) 4
+          speed (if (> meter 80) 6
                     (> meter 60) 3
                     (> meter 40) 2
-                    (> meter 20) 1
-                    0.8)
-          vx (* speed mx)
-          vy (* speed my)
-          new-mx (/ (+ dir-x vx) 2)
-          new-my (/ (+ dir-y vy) 2)
+                    (> meter 20) 1.2
+                    1)
+
+          vx (* speed (+ mx dir-x))
+          vy (* speed (+ my dir-y))
           ]
       (tset state :meter meter)
       (tset state :boost-ticks boost-ticks)
-      (tset state :mx new-mx)
-      (tset state :my new-my)
+      ;; (tset state :degrees new-degrees)
+      (tset state :mx vx)
+      (tset state :my vy)
       (values vx vy))
     )
 
@@ -161,8 +166,9 @@
       ;; (if (playdate.buttonJustPressed playdate.kButtonA)
       ;;     (scene-manager:select! :menu))
       (if (and (playdate.buttonJustPressed playdate.kButtonA)
-               facing-sprite)
-          ($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")}))
+               (?. facing-sprite :interact!))
+          (let [response (facing-sprite:interact!)]
+            (print response)))
       )
     self)
 
@@ -252,7 +258,7 @@
           (tset player :algo-3 algo-3)
           (tset player :run-algo (?. player game-state.run-algo))
           (tset player :state {: animation :speed 2
-                               :dx 0 :dy 0
+                               :dx 0 :dy 0 :degrees 180
                                :mx 0 :my 0 :meter 1 :boost-ticks 0
                                :real-x x :real-y y
                                :visible true})
