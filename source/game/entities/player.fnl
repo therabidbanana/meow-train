@@ -4,7 +4,7 @@
   [pressed? playdate.buttonIsPressed
    justpressed? playdate.buttonJustPressed
    gfx playdate.graphics
-   vector playdate.geometry.vector2D
+   $particles (require :source.game.particles)
    $ui (require :source.lib.ui)
    scene-manager (require :source.lib.scene-manager)
    anim (require :source.lib.animation)]
@@ -234,6 +234,7 @@
          )
        (> count 0)
        (do
+         ($particles.frustration! (+ x 9) (- y 3))
          (tset self :state :real-x x)
          (tset self :state :real-y y)
          (tset self :state :mx 0)

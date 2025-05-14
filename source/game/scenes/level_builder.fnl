@@ -7,6 +7,7 @@
    {: prepare-level!} (require :source.lib.level)
    libgraph (require :source.lib.graph)
    $ui (require :source.lib.ui)
+   $particles (require :source.game.particles)
    scene-manager (require :source.lib.scene-manager)
    ]
 
@@ -26,6 +27,7 @@
     )
 
   (fn stage-draw! [$scene]
+    ($particles:draw-all)
     ($ui:render!)
     )
 

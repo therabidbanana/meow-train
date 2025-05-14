@@ -4,6 +4,7 @@
   [gfx playdate.graphics
    scene-manager (require :source.lib.scene-manager)
    tile (require :source.lib.behaviors.tile-movement)
+   $particles (require :source.game.particles)
    $ui (require :source.lib.ui)
    anim (require :source.lib.animation)]
 
@@ -19,7 +20,14 @@
                  0)
           dx (clamp (- 0 max-speed) dx max-speed)
           dy (clamp (- 0 max-speed) dy max-speed)
+          bubble-timer (- state.bubble-timer 1)
           ]
+      (if (= bubble-timer 0)
+          (do
+            (tset self :state :bubble-timer 60)
+            ($particles.quest-bubble! (+ x (div self.width 2)) y))
+          (not state.following)
+          (tset self :state :bubble-timer bubble-timer))
       (tset self :state :dx dx)
       (tset self :state :dy dy)
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
@@ -67,7 +75,8 @@
                                                 {:state :blinking :start 2 :end 3 :delay 300 :transition-to :pace}
                                                 {:state :pace :start 4 :end 5 :delay 500 :transition-to :standing}
                                                 {:state :walking :start 4 :end 5}]})
-          player (gfx.sprite.new)]
+          player (gfx.sprite.new)
+          ]
       (player:setCenter 0 0)
       (player:setBounds x y 32 32)
       ;; (player:setCollideRect 6 1 18 30)
@@ -80,6 +89,6 @@
       (tset player :follow! follow!)
       (tset player :unfollow! unfollow!)
       (tset player :interact! interact!)
-      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true})
+      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true :bubble-timer 30})
       player)))
 
