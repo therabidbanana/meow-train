@@ -33,7 +33,7 @@
       (sprite:setCenter 0 0)
       (sprite:setSize width height)
       (sprite:moveTo x y)
-      (sprite:setGroups [3])
+      (sprite:setGroups [5])
       (sprite:setCollideRect 0 0 width height)
       (tset sprite :entrance fields.entrance)
       (tset sprite :collisionResponse collisionResponse)

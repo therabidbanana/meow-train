@@ -1,4 +1,4 @@
-(import-macros {: inspect : defns : div} :source.lib.macros)
+(import-macros {: inspect : defns : div : clamp} :source.lib.macros)
 
 (defns :passenger
   [gfx playdate.graphics
@@ -8,7 +8,20 @@
    anim (require :source.lib.animation)]
 
   (fn react! [{: state : height : x : y : tile-w : tile-h : width &as self}]
-    (let [dx 0 dy 0]
+    (let [(target-x target-y) (if state.following
+                                  (state.following:follow-target))
+          max-speed 4
+          dx (if state.following
+                 (- target-x x)
+                 0)
+          dy (if state.following
+                 (- target-y y)
+                 0)
+          dx (clamp (- 0 max-speed) dx max-speed)
+          dy (clamp (- 0 max-speed) dy max-speed)
+          ]
+      (tset self :state :dx dx)
+      (tset self :state :dy dy)
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
       )
     self)
@@ -26,8 +39,18 @@
       (self:setImage (animation:getImage)))
     )
 
+  (fn follow! [self player]
+    (tset self :state :following player)
+    )
+
+  (fn unfollow! [self player]
+    (tset self :state :following nil)
+    )
+
   (fn interact! [self player]
-    ($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")})
+    ($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")
+                        :action #(do (player:pickup! self)
+                                     (self:follow! player))})
     )
 
   ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
@@ -52,6 +75,8 @@
       (tset player :draw draw)
       (tset player :update update)
       (tset player :react! react!)
+      (tset player :follow! follow!)
+      (tset player :unfollow! unfollow!)
       (tset player :interact! interact!)
       (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true})
       player)))

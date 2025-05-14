@@ -794,7 +794,7 @@
 					"entityInstances": [
 						{
 							"__identifier": "player",
-							"__grid": [10,9],
+							"__grid": [11,72],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": { "tilesetUid": 14, "x": 0, "y": 0, "w": 32, "h": 32 },
@@ -803,34 +803,34 @@
 							"width": 32,
 							"height": 32,
 							"defUid": 4,
-							"px": [160,144],
+							"px": [176,1152],
 							"fieldInstances": [{ "__identifier": "name", "__type": "String", "__value": "Banana", "__tile": null, "defUid": 6, "realEditorValues": [{
 								"id": "V_String",
 								"params": ["Banana"]
 							}] }],
-							"__worldX": 0,
-							"__worldY": 0
+							"__worldX": 16,
+							"__worldY": 1008
 						},
 						{
 							"__identifier": "door",
-							"__grid": [30,1],
+							"__grid": [29,0],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
 							"__smartColor": "#EAD4AA",
 							"iid": "efcf1b00-1030-11f0-aa9a-df93059996ca",
-							"width": 48,
+							"width": 96,
 							"height": 32,
 							"defUid": 18,
-							"px": [480,16],
+							"px": [464,0],
 							"fieldInstances": [
 								{ "__identifier": "level", "__type": "String", "__value": "level_1", "__tile": null, "defUid": 19, "realEditorValues": [{
 									"id": "V_String",
 									"params": ["level_1"]
 								}] },
-								{ "__identifier": "exit", "__type": "Point", "__value": { "cx": 31, "cy": 4 }, "__tile": null, "defUid": 20, "realEditorValues": [{
+								{ "__identifier": "exit", "__type": "Point", "__value": { "cx": 31, "cy": 2 }, "__tile": null, "defUid": 20, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["31,4"]
+									"params": ["31,2"]
 								}] },
 								{ "__identifier": "exit_door", "__type": "EntityRef", "__value": {
 									"entityIid": "0b293610-1030-11f0-aa9a-c9b6a1909261",
@@ -846,8 +846,8 @@
 									"params": ["level_0"]
 								}] }
 							],
-							"__worldX": 320,
-							"__worldY": -128
+							"__worldX": 304,
+							"__worldY": -144
 						},
 						{
 							"__identifier": "pickup",
@@ -1181,6 +1181,12 @@
 					"seed": 1668546,
 					"overrideTilesetUid": null,
 					"gridTiles": [
+						{ "px": [464,0], "src": [80,16], "f": 0, "t": 15, "d": [29], "a": 1 },
+						{ "px": [480,0], "src": [80,16], "f": 0, "t": 15, "d": [30], "a": 1 },
+						{ "px": [496,0], "src": [80,16], "f": 0, "t": 15, "d": [31], "a": 1 },
+						{ "px": [512,0], "src": [80,16], "f": 0, "t": 15, "d": [32], "a": 1 },
+						{ "px": [528,0], "src": [80,16], "f": 0, "t": 15, "d": [33], "a": 1 },
+						{ "px": [544,0], "src": [80,16], "f": 0, "t": 15, "d": [34], "a": 1 },
 						{ "px": [16,16], "src": [64,16], "f": 0, "t": 14, "d": [44], "a": 1 },
 						{ "px": [32,16], "src": [80,16], "f": 0, "t": 15, "d": [45], "a": 1 },
 						{ "px": [48,16], "src": [64,16], "f": 0, "t": 14, "d": [46], "a": 1 },
@@ -5302,24 +5308,24 @@
 					"entityInstances": [
 						{
 							"__identifier": "door",
-							"__grid": [2,13],
+							"__grid": [1,13],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
 							"__smartColor": "#EAD4AA",
 							"iid": "0b293610-1030-11f0-aa9a-c9b6a1909261",
-							"width": 48,
+							"width": 96,
 							"height": 32,
 							"defUid": 18,
-							"px": [32,208],
+							"px": [16,208],
 							"fieldInstances": [
 								{ "__identifier": "level", "__type": "String", "__value": "level_0", "__tile": null, "defUid": 19, "realEditorValues": [{
 									"id": "V_String",
 									"params": ["level_0"]
 								}] },
-								{ "__identifier": "exit", "__type": "Point", "__value": { "cx": 3, "cy": 9 }, "__tile": null, "defUid": 20, "realEditorValues": [{
+								{ "__identifier": "exit", "__type": "Point", "__value": { "cx": 4, "cy": 10 }, "__tile": null, "defUid": 20, "realEditorValues": [{
 									"id": "V_String",
-									"params": ["3,9"]
+									"params": ["4,10"]
 								}] },
 								{ "__identifier": "exit_door", "__type": "EntityRef", "__value": {
 									"entityIid": "efcf1b00-1030-11f0-aa9a-df93059996ca",
@@ -5335,7 +5341,7 @@
 									"params": ["level_1"]
 								}] }
 							],
-							"__worldX": 320,
+							"__worldX": 304,
 							"__worldY": -176
 						},
 						{

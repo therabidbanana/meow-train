@@ -167,10 +167,23 @@
       ;;     (scene-manager:select! :menu))
       (if (and (playdate.buttonJustPressed playdate.kButtonA)
                (?. facing-sprite :interact!))
-          (let [response (facing-sprite:interact!)]
+          (let [response (facing-sprite:interact! self)]
             (print response)))
       )
     self)
+
+  (fn pickup! [self passenger]
+    (do
+      (tset self :state :picked-up true)
+      (tset self :state :passenger passenger)
+      (tset self :state :pickup-time (* 30 90)))
+    )
+
+  ;; Returns the target x y for a following passenger based on
+  ;; current x y (and eventually facing, so they stay behind)
+  ;; TODO: facing
+  (fn follow-target [self]
+    (values (+ self.x (/ self.width 2)) (+ self.y self.height 8)))
 
   (fn replace-at-exit [{: state &as self} {: x : y}]
     (self:add)
@@ -178,9 +191,14 @@
     (tset state :real-y y)
     (tset state :exit-from nil)
     (self:moveTo x y)
+    (if state.passenger
+        (let [(new-x new-y) (self:follow-target)]
+          (state.passenger:add)
+          (state.passenger:moveTo new-x new-y))
+        )
     self)
 
-  (fn update [{:state {: animation : real-x : real-y : dx : dy : walking?} &as self}]
+  (fn update [{:state {: passenger : animation : real-x : real-y : dx : dy : walking?} &as self}]
     (let [new-x (+ dx real-x)
           new-y (+ dy real-y)
           target-x (math.floor new-x)
@@ -192,17 +210,16 @@
          (tset self :state :exit-from door.current)
          (scene-manager:select! door.level)
          )
-       (and (> count 0) (?. collisions 1 :other :pickup?))
-       (do
-         (tset self :state :real-x new-x)
-         (tset self :state :real-y new-y)
-         (tset self :state :picked-up true)
-         (tset self :state :pickup-time (* 30 90)))
+       ;; TODO: bug if you collide with dropoff _and_ wall in same move (start moving inverse because bounces get larger and larger as real-x grows)
        (and (> count 0) (?. collisions 1 :other :dropoff?))
        (do
          (tset self :state :real-x new-x)
          (tset self :state :real-y new-y)
-         (tset self :state :picked-up false))
+         (tset self :state :picked-up false)
+         (if passenger
+             (do (passenger:unfollow!)
+                 (tset self :state :passenger nil)))
+         )
        (> count 0)
        (do
          (tset self :state :real-x x)
@@ -251,8 +268,10 @@
           (tset player :collisionResponse collisionResponse)
 
           (tset player :update update)
+          (tset player :follow-target follow-target)
           (tset player :react! react!)
           (tset player :boost! boost!)
+          (tset player :pickup! pickup!)
           (tset player :algo-1 algo-1)
           (tset player :algo-2 algo-2)
           (tset player :algo-3 algo-3)
