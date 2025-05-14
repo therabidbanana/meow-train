@@ -1,3 +1,12 @@
+# Meow Train
+
+Collision Groups
+
+1 - player
+2 - ???
+3 - npcs
+4 - walls
+
 # Playdate Fennel Starter
 
 This starter set is intended to allow use of the Fennel language on Playdate,

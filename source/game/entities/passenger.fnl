@@ -40,6 +40,8 @@
     )
 
   (fn follow! [self player]
+    ;; Help prevent bugs where npc pushes you back into a door
+    (self:setGroups [5])
     (tset self :state :following player)
     )
 

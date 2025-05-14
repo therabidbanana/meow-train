@@ -148,11 +148,14 @@
                            0
                        )
           (dx dy)  (run-algo self dir-x dir-y boost-factor)
+          new-facing (if (> dx 0) :right (> 0 dx) :left
+                         (> dy 0) :down (> 0 dy) :up
+                         state.facing)
           [facing-x facing-y] (case state.facing
                                 :left [(- x 8) (+ y (div height 2))]
                                 :right [(+ 40 x) (+ y (div height 2))]
                                 :up [(+ x (div width 2)) (- y 8)]
-                                _ [(+ x (div width 2)) (+ 8 height y)]) ;; 40 for height / width of sprite + 8
+                                _ [(+ x (div width 2)) (+ 8 height y)])
           [facing-sprite & _] (gfx.sprite.querySpritesAtPoint facing-x facing-y)
           pickup-time (if (?. state :picked-up) (- (?. state :pickup-time) 1)
                           0)
@@ -160,6 +163,7 @@
       ;; Figure out how to counteract accel with drag
       (tset self :state :dx dx)
       (tset self :state :dy dy)
+      (tset self :state :facing new-facing)
       (tset self :state :pickup-time pickup-time)
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
 
@@ -181,9 +185,17 @@
 
   ;; Returns the target x y for a following passenger based on
   ;; current x y (and eventually facing, so they stay behind)
-  ;; TODO: facing
   (fn follow-target [self]
-    (values (+ self.x (/ self.width 2)) (+ self.y self.height 8)))
+    (case self.state.facing
+      :down
+      (values (+ self.x (/ self.width 2)) (+ self.y self.height 8))
+      :up
+      (values (+ self.x (/ self.width 2)) (- self.y 8))
+      :right
+      (values (+ self.x self.width 8) (+ self.y (/ self.height 2)))
+      :left
+      (values (- self.x 8) (+ self.y (/ self.height 2)))
+      ))
 
   (fn replace-at-exit [{: state &as self} {: x : y}]
     (self:add)
@@ -249,7 +261,7 @@
   (fn collisionResponse [self other]
     (if (or other.door? other.dropoff? other.pickup?)
         :overlap
-        :bounce)
+        :slide)
     )
 
   (fn new! [x y {: tile-w : tile-h : game-state &as extras}]
