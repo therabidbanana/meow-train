@@ -234,7 +234,7 @@
          )
        (> count 0)
        (do
-         ($particles.frustration! (+ x 9) (- y 3))
+         ($particles.frustration! (+ x (div self.width 2)) (- y 2))
          (tset self :state :real-x x)
          (tset self :state :real-y y)
          (tset self :state :mx 0)

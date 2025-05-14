@@ -20,12 +20,12 @@
   (fn frustration! [x y]
     (let [image (gfx.imagetable.new :assets/images/frustration)
           anim (gfx.animation.loop.new 80 image false)]
-      (table.insert state.particles {: anim : x : y})))
+      (table.insert state.particles {: anim :x (- x 8) :y (- y 16)})))
 
   (fn quest-bubble! [x y]
     (let [image (gfx.imagetable.new :assets/images/quest-bubble)
           anim (gfx.animation.loop.new 300 image false)]
-      (table.insert state.particles {: anim : x : y})))
+      (table.insert state.particles {: anim :x (- x 12) :y (- y 24)})))
 
   {: draw-all
    : frustration! : quest-bubble!
