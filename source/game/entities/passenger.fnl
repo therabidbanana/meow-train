@@ -58,7 +58,7 @@
     )
 
   (fn interact! [self player]
-    ($ui:open-textbox! {:text (gfx.getLocalizedText "textbox.test2")
+    ($ui:open-textbox! {:text (.. "I need to get to platform " self.state.platform " in 90 seconds!")
                         :action #(do (player:pickup! self)
                                      (self:follow! player))})
     )
@@ -69,6 +69,8 @@
   ;; (fn collisionResponse [self other]
   ;;   (other:collisionResponse))
 
+  (local platforms [:2 :3])
+
   (fn new! [x y]
     (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
           animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300 :transition-to :blinking}
@@ -76,6 +78,8 @@
                                                 {:state :pace :start 4 :end 5 :delay 500 :transition-to :standing}
                                                 {:state :walking :start 4 :end 5}]})
           player (gfx.sprite.new)
+          ;; TODO - extract "sample" helper
+          target (inspect (?. platforms (math.random (length platforms))))
           ]
       (player:setCenter 0 0)
       (player:setBounds x y 32 32)
@@ -89,6 +93,7 @@
       (tset player :follow! follow!)
       (tset player :unfollow! unfollow!)
       (tset player :interact! interact!)
-      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true :bubble-timer 30})
+      (tset player :state {: animation :platform target
+                           :speed 2 :dx 0 :dy 0 :visible true :bubble-timer 30})
       player)))
 
