@@ -215,7 +215,8 @@
           new-y (+ dy real-y)
           target-x (math.floor new-x)
           target-y (math.floor new-y)
-          (x y collisions count) (self:moveWithCollisions target-x target-y)]
+          (x y collisions count) (self:moveWithCollisions target-x target-y)
+          first-collision (?. collisions 1 :other)]
       ;; TODO: collisions relying on 1 being the special other is going to cause issues
       ;; (if (> count 0) (inspect (icollect [_ x (ipairs collisions)] x.other)))
       (if
@@ -231,7 +232,7 @@
          (tset self :state :real-y new-y)
          (tset self :state :picked-up false)
          (if passenger
-             (do (passenger:unfollow!)
+             (do (passenger:transfer! first-collision)
                  (tset self :state :passenger nil)))
          )
        (> count 0)

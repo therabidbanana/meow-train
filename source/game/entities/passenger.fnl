@@ -53,6 +53,14 @@
     (tset self :state :following player)
     )
 
+  (fn transfer! [self dropoff]
+    (if (= dropoff.platform self.state.platform)
+        ($ui:open-textbox! {:text "Thank you!"
+                            :action #(self:remove)})
+        ($ui:open-textbox! {:text "This doesn't look right!"
+                            :action #(self:unfollow!)}))
+    )
+
   (fn unfollow! [self player]
     (tset self :state :following nil)
     )
@@ -92,6 +100,7 @@
       (tset player :react! react!)
       (tset player :follow! follow!)
       (tset player :unfollow! unfollow!)
+      (tset player :transfer! transfer!)
       (tset player :interact! interact!)
       (tset player :state {: animation :platform target
                            :speed 2 :dx 0 :dy 0 :visible true :bubble-timer 30})
