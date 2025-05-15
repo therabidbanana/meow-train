@@ -216,11 +216,13 @@
           target-x (math.floor new-x)
           target-y (math.floor new-y)
           (x y collisions count) (self:moveWithCollisions target-x target-y)]
+      ;; TODO: collisions relying on 1 being the special other is going to cause issues
+      ;; (if (> count 0) (inspect (icollect [_ x (ipairs collisions)] x.other)))
       (if
        (and (> count 0) (?. collisions 1 :other :door?))
        (let [door (?. collisions 1 :other)]
          (tset self :state :exit-from door.current)
-         (scene-manager:select! door.level)
+         (scene-manager:select! (inspect door.level))
          )
        ;; TODO: bug if you collide with dropoff _and_ wall in same move (start moving inverse because bounces get larger and larger as real-x grows)
        (and (> count 0) (?. collisions 1 :other :dropoff?))
@@ -276,7 +278,7 @@
           (player:setGroups [1])
           (player:setCollidesWithGroups [3 4])
           (tset player :player? true)
-          (tset player :draw draw)
+          ;; (tset player :draw draw)
           (tset player :replace-at-exit replace-at-exit)
           (tset player :collisionResponse collisionResponse)
 

@@ -5,5 +5,6 @@
       door    (require :source.game.entities.door)
       dropoff    (require :source.game.entities.dropoff)
       pickup    (require :source.game.entities.pickup)
+      track    (require :source.game.entities.track)
       hud    (require :source.game.entities.hud)]
-  {: player : npc : hud : door : pickup : dropoff : cat : frog})
+  {: player : npc : hud : door : pickup : dropoff : cat : frog : track})
