@@ -17,6 +17,9 @@
                            (if (particle.anim:isValid) particle)))]
       (tset state :particles transitioned)))
 
+  (fn clear-all []
+    (tset state :particles []))
+
   (fn frustration! [x y]
     (let [image (gfx.imagetable.new :assets/images/frustration)
           anim (gfx.animation.loop.new 80 image false)]
@@ -27,6 +30,6 @@
           anim (gfx.animation.loop.new 300 image false)]
       (table.insert state.particles {: anim :x (- x 12) :y (- y 24)})))
 
-  {: draw-all
+  {: draw-all : clear-all
    : frustration! : quest-bubble!
    })

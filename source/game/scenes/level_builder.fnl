@@ -24,6 +24,7 @@
         ))
 
   (fn stage-exit! [$scene]
+    ($particles:clear-all)
     )
 
   (fn stage-draw! [$scene]
