@@ -156,7 +156,8 @@
                                 :right [(+ 40 x) (+ y (div height 2))]
                                 :up [(+ x (div width 2)) (- y 8)]
                                 _ [(+ x (div width 2)) (+ 8 height y)])
-          [facing-sprite & _] (gfx.sprite.querySpritesAtPoint facing-x facing-y)
+          [facing-sprite & _] (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect facing-x facing-y 8 8))]
+                                (if (?. x :interact!) x))
           pickup-time (if (?. state :picked-up) (- (?. state :pickup-time) 1)
                           0)
           ]
