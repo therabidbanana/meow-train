@@ -477,6 +477,21 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
     )
 
   (tset _G.playdate :geometry {})
+  (tset _G.playdate :geometry :vector2D
+        (defns :vector2D []
+          (fn leftNormal [{: x : y &as self}]
+            (let [new-x (- 0 y)
+                  new-y x
+                  amp (math.sqrt (+ (* new-x new-x) (* new-y new-y)))
+                  norm-x (if (> amp 0) (/ new-x amp) 0)
+                  norm-y (if (> amp 0) (/ new-y amp) 0)]
+              (inspect self)
+              (inspect (self.new norm-x norm-y))))
+
+          (fn new [x y]
+            (let [vec {: x : y}]
+              (setmetatable vec {:__index _G.playdate.geometry.vector2D})
+              vec))))
   (tset _G.playdate :geometry :rect
         (defns :rect []
           (fn unpack [self]

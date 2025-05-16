@@ -37,7 +37,12 @@
   (fn update [{:state {: animation : dx : dy : walking?} &as self}]
     (let [target-x (+ dx self.x)
           target-y (+ dy self.y)
-          (x y collisions count) (self:moveWithCollisions target-x target-y)]
+          (x y collisions count) (self:moveWithCollisions target-x target-y)
+          collide-norm (?. collisions 1 :normal)
+          slide (if collide-norm (collide-norm:leftNormal))]
+      (if (> count 0)
+          (self:moveWithCollisions (+ x slide.x)
+                                   (+ y slide.y)))
       (if walking?
           (animation:transition! :walking)
           (animation:transition! :standing {:if :walking}))
@@ -74,8 +79,8 @@
   ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
   ;;   (animation:draw x y))
 
-  ;; (fn collisionResponse [self other]
-  ;;   (other:collisionResponse))
+  (fn collisionResponse [self other]
+    :slide)
 
   (local platforms [:2 :3])
 
@@ -94,7 +99,7 @@
       ;; (player:setCollideRect 6 1 18 30)
       (player:setCollideRect 0 0 32 32)
       (player:setGroups [3])
-      (player:setCollidesWithGroups [1 4])
+      (player:setCollidesWithGroups [1 3 4])
       (tset player :draw draw)
       (tset player :update update)
       (tset player :react! react!)

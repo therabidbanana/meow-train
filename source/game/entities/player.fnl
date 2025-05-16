@@ -148,8 +148,8 @@
                            0
                        )
           (dx dy)  (run-algo self dir-x dir-y boost-factor)
-          new-facing (if (> dx 0) :right (> 0 dx) :left
-                         (> dy 0) :down (> 0 dy) :up
+          new-facing (if (> dy 0) :down (> 0 dy) :up
+                         (> dx 0) :right (> 0 dx) :left
                          state.facing)
           [facing-x facing-y] (case state.facing
                                 :left [(- x 8) (+ y (div height 2))]
@@ -189,13 +189,13 @@
   (fn follow-target [self]
     (case self.state.facing
       :down
-      (values (+ self.x (/ self.width 2)) (+ self.y self.height 8))
+      (values (+ self.x (/ self.width 2)) (- self.y (* self.height 0.5)))
       :up
-      (values (+ self.x (/ self.width 2)) (- self.y 8))
+      (values (+ self.x (/ self.width 2)) (+ self.y (* self.height 1.5)))
       :right
-      (values (+ self.x self.width 8) (+ self.y (/ self.height 2)))
+      (values (- self.x (* self.width 1)) (+ self.y (/ self.height 2)))
       :left
-      (values (- self.x 8) (+ self.y (/ self.height 2)))
+      (values (+ self.x (* self.width 1.5)) (+ self.y (/ self.height 2)))
       ))
 
   (fn replace-at-exit [{: state &as self} {: x : y}]
@@ -220,6 +220,8 @@
           first-collision (?. collisions 1 :other)]
       ;; TODO: collisions relying on 1 being the special other is going to cause issues
       ;; (if (> count 0) (inspect (icollect [_ x (ipairs collisions)] x.other)))
+      (tset self :state :dx 0)
+      (tset self :state :dy 0)
       (if
        (and (> count 0) (?. collisions 1 :other :door?))
        (let [door (?. collisions 1 :other)]
