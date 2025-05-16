@@ -207,7 +207,7 @@
  ;; https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084/
  ;; https://gist.github.com/tesselode/e1bcf22f2c47baaedcfc472e78cac55e
  (fn -sweptaabb [a b dx dy]
-   (if (= (+ dx dy) 0)
+   (if (and (= dx 0) (= dy 0))
        ;; Not moving is not colliding
        (values 0 0 1)
        ;; No move on X and not already collide on x axis - skip
@@ -245,6 +245,7 @@
              exitTime (math.min xexit yexit)
              missed? (or (> entryTime exitTime)
                          ;; (and (< xenter 0) (< yenter 0))
+                         ;; TODO: is following line correct? (should be an or based on gist source)
                          (and (> xenter yexit) (> yenter xexit))
                          (> xenter 1) (> yenter 1))]
          ;; (inspect {: a : b : dx : dy : xenter : yenter : entryTime : exitTime : missed? : yexit : xexit})
@@ -308,7 +309,8 @@
                       :ti collidedt
                       :move {:x (+ (* collidedt dx))
                              :y (+ (* collidedt dy))}
-                      :normal {:x normx :y normy}
+                      ;; TODO: should I invert here?
+                      :normal (playdate.geometry.vector2D.new normx normy)
                       :type (if (?. self :collisionResponse)
                                 (if (= (type self.collisionResponse) :string)
                                     self.collisionResponse
@@ -320,12 +322,46 @@
          _ (table.sort collisions (fn [a b] (< a.ti b.ti)))
          actual-collides (icollect [i v (ipairs collisions)] (if (not= v.type :overlap) v))
          first-hit (?. actual-collides 1)
+         first-hit-norm (if first-hit
+                            first-hit.normal)
          new-x (if first-hit
                    (+ self.x first-hit.move.x)
                    x)
          new-y (if first-hit
                    (+ self.y first-hit.move.y)
                    y)
+         remaining-x (- x new-x)
+         remaining-y (- y new-y)
+         remaining-magnitude (math.sqrt (+ (* remaining-x remaining-x)
+                                           (* remaining-y remaining-y)))
+         ;; (new-x new-y) (if first-hit
+         ;;                   (case first-hit.type
+         ;;                     :bounce
+         ;;                     (values ())
+         ;;                     :slide (+ new-x (* remaining-x first-hit-norm.x))
+         ;;                     _ new-x)
+         ;;                   (values new-x new-y))
+         ;; TODO - second loop with remaining x/y
+         ;; new-x (if first-hit
+         ;;           (case first-hit.type
+         ;;             :bounce (+ new-x (if (not= 0 first-hit-norm.x)
+         ;;                                  (- 0 remaining-x)
+         ;;                                  remaining-x))
+         ;;             :slide (+ new-x (if (not= 0 first-hit-norm.x)
+         ;;                                 0
+         ;;                                 remaining-x))
+         ;;             _ new-x)
+         ;;           new-x)
+         ;; new-y (if first-hit
+         ;;           (case first-hit.type
+         ;;             :bounce (+ new-y (if (not= 0 first-hit-norm.y)
+         ;;                                  (- 0 remaining-y)
+         ;;                                  remaining-y))
+         ;;             :slide (+ new-y (if (not= 0 first-hit-norm.y)
+         ;;                                 0
+         ;;                                 remaining-y))
+         ;;             _ new-y)
+         ;;           new-y)
          ]
      ;; (if first-hit (inspect first-hit))
      (values new-x new-y collisions count)
