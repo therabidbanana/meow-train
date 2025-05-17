@@ -11,9 +11,12 @@
                         (< state.spawn-timer 1)
                         (* (math.random 5 15) 30)
                         (- state.spawn-timer 1)
-                        )]
+                        )
+          sprites (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect self.x self.y 16 16))]
+                    (if (?. x :interact!) x))
+          ]
       (tset state :spawn-timer new-timer)
-      (if will-spawn?
+      (if (and will-spawn? (= (length sprites) 0))
           (doto (passenger.new! self.x self.y)
             (: :add)))
       ))
@@ -34,6 +37,7 @@
       (sprite:setSize width height)
       (sprite:moveTo x y)
       (sprite:setGroups [5])
+      (sprite:setCollidesWithGroups [3])
       (sprite:setCollideRect 0 0 width height)
       (tset sprite :entrance fields.entrance)
       (tset sprite :collisionResponse collisionResponse)
