@@ -42,7 +42,11 @@
            &as loaded} (prepare-level! level
                                        entity-map
                                        {:game-state game-state
-                                        :tiles      {:z-index -10}})
+                                        :floor {:z-index -100}
+                                        :walls {:z-index -90}
+                                        :tiles      {:z-index -10}
+                                        :foreground {:z-index 10}
+                                        })
           wall-sprites (icollect [_ v (ipairs (playdate.graphics.sprite.getAllSprites))]
                          (if (?. v :wall?) v))
 

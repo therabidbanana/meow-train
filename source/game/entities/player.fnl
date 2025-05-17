@@ -250,13 +250,20 @@
        (do
          (tset self :state :real-x new-x)
          (tset self :state :real-y new-y)
-            )
-          )
-      ;; (if walking?
-      ;;    (animation:transition! :walking)
-      ;;    (animation:transition! :standing {:if :walking}))
-      )
-    (self:setImage (animation:getImage))
+         )
+       )
+      (if walking?
+          (animation:transition! (case self.state.facing
+                                   :left :walking-left
+                                   :right :walking-right
+                                   :up :walking-up
+                                   _ :walking-down))
+          (animation:transition! (case self.state.facing
+                                   :left :standing-left
+                                   :right :standing-right
+                                   :up :standing-up
+                                   _ :standing)))
+      (self:setImage (animation:getImage)))
     )
 
   ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
@@ -274,7 +281,17 @@
   (fn new! [x y {: tile-w : tile-h : game-state &as extras}]
     (if (not (?. game-state :player))
         (let [image (gfx.imagetable.new :assets/images/player)
-              animation (anim.new {: image :states [{:state :standing :start 1 :end 1}]})
+              animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :transition-to :blink :delay 1700}
+                                                    {:state :blink :start 6 :end 6 :transition-to :standing :delay 150}
+                                                    {:state :walking-down :start 1 :end 6}
+                                                    {:state :walking-up :start 19 :end 24}
+                                                    {:state :walking-left :start 7 :end 12}
+                                                    {:state :walking-right :start 13 :end 18}
+                                                    {:state :standing-down :start 1 :end 1}
+                                                    {:state :standing-up :start 19 :end 19}
+                                                    {:state :standing-left :start 7 :end 7}
+                                                    {:state :standing-right :start 13 :end 13}
+                                                    ]})
               player (gfx.sprite.new)]
           (player:setCenter 0 0)
           (player:setBounds x y 48 48)
