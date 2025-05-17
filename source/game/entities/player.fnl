@@ -148,8 +148,12 @@
                            0
                        )
           (dx dy)  (run-algo self dir-x dir-y boost-factor)
-          new-facing (if (> dy 0) :down (> 0 dy) :up
-                         (> dx 0) :right (> 0 dx) :left
+          magx (math.abs dx)
+          magy (math.abs dy)
+          new-facing (if (and (>= magy magx) (> dy 0)) :down
+                         (and (>= magy magx) (> 0 dy)) :up
+                         (and (>= magx magy) (> dx 0)) :right
+                         (and (>= magx magy) (> 0 dx)) :left
                          state.facing)
           [facing-x facing-y] (case state.facing
                                 :left [(- x 24) (+ y (div height 2))]
