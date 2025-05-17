@@ -82,7 +82,9 @@
   (fn collisionResponse [self other]
     :slide)
 
-  (local platforms [:2 :3])
+  (local platforms [:2 :3 :4 :5
+                    :2 :3 :4 :5
+                    :2 :3 :4 :5])
 
   (fn new! [x y]
     (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
