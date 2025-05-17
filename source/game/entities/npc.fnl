@@ -42,7 +42,10 @@
   ;; (fn collisionResponse [self other]
   ;;   (other:collisionResponse))
 
-  (fn new! [x y {: tile-h : tile-w}]
+  (fn interact! [{: state &as self}]
+    (if (?. state :text) ($ui:open-textbox! {:text state.text })))
+
+  (fn new! [x y {: tile-h : tile-w : fields}]
     (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
           animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300 :transition-to :blinking}
                                                 {:state :blinking :start 2 :end 3 :delay 300 :transition-to :pace}
@@ -58,9 +61,12 @@
       (tset player :draw draw)
       (tset player :update update)
       (tset player :react! react!)
+      (if (?. fields :text)
+          (tset player :interact! interact!))
       (tset player :tile-h tile-h)
       (tset player :tile-w tile-w)
       (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true
+                           :text (?. fields :text)
                            :tile-x (div x tile-w) :tile-y (div y tile-h)})
       (tile.add! player {: tile-h : tile-w})
       player)))
