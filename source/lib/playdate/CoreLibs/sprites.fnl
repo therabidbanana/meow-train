@@ -341,7 +341,7 @@
          ;;                     :slide (+ new-x (* remaining-x first-hit-norm.x))
          ;;                     _ new-x)
          ;;                   (values new-x new-y))
-         ;; TODO - second loop with remaining x/y
+         ;; TODO - Get bounce and slide working
          ;; new-x (if first-hit
          ;;           (case first-hit.type
          ;;             :bounce (+ new-x (if (not= 0 first-hit-norm.x)
