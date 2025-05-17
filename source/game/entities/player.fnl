@@ -152,11 +152,11 @@
                          (> dx 0) :right (> 0 dx) :left
                          state.facing)
           [facing-x facing-y] (case state.facing
-                                :left [(- x 8) (+ y (div height 2))]
-                                :right [(+ 40 x) (+ y (div height 2))]
-                                :up [(+ x (div width 2)) (- y 8)]
+                                :left [(- x 24) (+ y (div height 2))]
+                                :right [(+ width x) (+ y (div height 2))]
+                                :up [(+ x (div width 2)) (- y 24)]
                                 _ [(+ x (div width 2)) (+ 8 height y)])
-          [facing-sprite & _] (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect facing-x facing-y 8 8))]
+          [facing-sprite & _] (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect facing-x facing-y 16 16))]
                                 (if (?. x :interact!) x))
           pickup-time (if (?. state :picked-up) (- (?. state :pickup-time) 1)
                           0)

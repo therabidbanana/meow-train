@@ -101,7 +101,7 @@
       ;; (player:setCollideRect 6 1 18 30)
       (player:setCollideRect 0 0 32 32)
       (player:setGroups [3])
-      (player:setCollidesWithGroups [1 3 4])
+      (player:setCollidesWithGroups [])
       (tset player :draw draw)
       (tset player :update update)
       (tset player :react! react!)
