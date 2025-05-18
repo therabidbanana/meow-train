@@ -14,8 +14,9 @@
     (let [transitioned (icollect [i particle (ipairs state.particles)]
                          (let [{: anim : x : y : ignore-offset} particle]
                            (if ignore-offset
-                               (gfx.pushContext)
-                               (gfx.setDrawOffset 0 0))
+                               (do
+                                 (gfx.pushContext)
+                                 (gfx.setDrawOffset 0 0)))
                            (particle.anim:draw x y)
                            (if ignore-offset (gfx.popContext))
                            (if (particle.anim:isValid) particle)))]
