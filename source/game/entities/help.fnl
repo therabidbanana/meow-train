@@ -36,8 +36,9 @@
     ($ui:open-textbox! {:text "Hi!"}))
 
   (fn new! [x y {: tile-h : tile-w}]
-    (let [image (gfx.imagetable.new :assets/images/frog-woman)
-          animation (anim.new {: image :states [{:state :standing :start 1 :end 1}]})
+    (let [image (gfx.imagetable.new :assets/images/rabbit-help)
+          animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :transition-to :blinking :delay 1500}
+                                                {:state :blinking :start 1 :end 3 :transition-to :standing :delay 300}]})
           player (gfx.sprite.new)]
       (player:setCenter 0 0)
       (player:setBounds x y 48 48)

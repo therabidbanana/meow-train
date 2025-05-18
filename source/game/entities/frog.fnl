@@ -26,6 +26,9 @@
     (let [target-x (+ dx self.x)
           target-y (+ dy self.y)
           (x y collisions count) (self:moveWithCollisions target-x target-y)]
+      (if walking?
+          (animation:transition! :walking)
+          (animation:transition! :standing {:if :walking}))
       (tset self :state :dx 0)
       (tset self :state :dy 0)
       (if (> count 0) (self:->stop!))
@@ -41,7 +44,9 @@
 
   (fn new! [x y {: tile-h : tile-w}]
     (let [image (gfx.imagetable.new :assets/images/frog-woman)
-          animation (anim.new {: image :states [{:state :standing :start 1 :end 1}]})
+          animation (anim.new {: image :states [{:state :standing :start 1 :end 1}
+                                                {:state :walking :start 1 :end 3 :delay 100}
+                                                ]})
           player (gfx.sprite.new)]
       (player:setCenter 0 0)
       (player:setBounds x y 48 48)
@@ -54,7 +59,7 @@
       (tset player :react! react!)
       (tset player :tile-h tile-h)
       (tset player :tile-w tile-w)
-      (tset player :state {: animation :speed 2 :dx 0 :dy 0 :visible true
+      (tset player :state {: animation :speed 1 :dx 0 :dy 0 :visible true
                            :tile-x (div x tile-w) :tile-y (div y tile-h)})
       (tile.add! player {: tile-h : tile-w})
       player)))
