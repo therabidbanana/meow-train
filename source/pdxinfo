@@ -4,5 +4,5 @@ description=Meow Train
 bundleID=com.davidhaslem.meow-train
 version=1.0
 buildNumber=1
-imagePath=assets
+imagePath=assets/images
 launchSoundPath=
