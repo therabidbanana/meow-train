@@ -17,6 +17,7 @@
   (fn exit! [$ game-state]
     (tset game-state :player nil)
     (tset game-state :spawned-count nil)
+    (tset game-state :ready false)
     (tset $ :state {}))
 
   (fn tick! [{:state {: listview} &as $}]

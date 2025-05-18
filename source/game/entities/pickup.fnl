@@ -3,7 +3,7 @@
 (defns :pickup [gfx playdate.graphics
                 passenger (require :source.game.entities.passenger)
                 ]
-  (fn react! [{: state &as self} game-state]
+  (fn react! [{: state &as self} $scene game-state]
     (let [will-spawn? (and (< state.spawn-timer 1)
                            (> (math.random 5 10) 5))
           new-timer (if (and (< state.spawn-timer 1) will-spawn?)
@@ -15,14 +15,15 @@
           sprites (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect self.x self.y 16 16))]
                     (if (?. x :interact!) x))
           spawned-count (or (?. game-state :spawned-count) 0)
-          ]
+          ready? (?. game-state :ready)]
       (tset state :spawn-timer new-timer)
-      (if (and will-spawn? (= (length sprites) 0))
+      (if (and will-spawn? (= (length sprites) 0) ready?)
           (let [passenger (passenger.new! self.x self.y spawned-count)
                 spawned (+ 1 spawned-count)]
             (tset game-state :spawned-count spawned)
             (passenger:add)
-            ))
+            )
+          )
       ))
 
   (fn draw [{: state &as self}]
