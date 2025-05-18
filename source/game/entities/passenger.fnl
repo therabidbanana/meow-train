@@ -134,7 +134,8 @@
       (tset player :give-up! give-up!)
       (tset player :interact! interact!)
       (tset player :state {: animation :platform target
-                           :pickup-time -1 :expected-time (- 90 (* spawned-count 5))
+                           :pickup-time -1
+                           :expected-time (clamp 25 (- 90 (* spawned-count 5)) 90)
                            :speed 2 :dx 0 :dy 0 :visible true :bubble-timer 30})
       player)))
 
