@@ -29,6 +29,7 @@
           ]
       (sprite:setCenter 0 0)
       (sprite:setSize 128 64)
+      (sprite:setZIndex -11)
       (sprite:moveTo (+ x (* 128 car-num)) y)
       (tset sprite :update update-car)
       (tset sprite :state {:animation anim : track })
