@@ -17,8 +17,11 @@
           ]
       (tset state :spawn-timer new-timer)
       (if (and will-spawn? (= (length sprites) 0))
-          (doto (passenger.new! self.x self.y)
-            (: :add)))
+          (let [passenger (passenger.new! self.x self.y state.spawned-count)
+                spawned (+ 1 state.spawned-count)]
+            (tset state :spawned-count spawned)
+            (passenger:add)
+            ))
       ))
 
   (fn draw [{: state &as self}]
@@ -42,7 +45,7 @@
       (tset sprite :entrance fields.entrance)
       (tset sprite :collisionResponse collisionResponse)
       (tset sprite :pickup? true)
-      (tset sprite :state {:spawn-timer (* 3 30)})
+      (tset sprite :state {:spawn-timer (* 3 30) :spawned-count 0})
       (tset sprite :draw draw)
       (tset sprite :update update)
       (tset sprite :react! react!)

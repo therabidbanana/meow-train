@@ -15,8 +15,13 @@
     (if ($ui:active?) ($ui:tick!) ;; tick if open
         (let [player-x state.player.x
               player-y state.player.y
+
+              game-over-misses 1
+
               center-x (clamp 0 (- player-x 200) (- state.stage-width 400))
               center-y (clamp 0 (- player-y 120) (- state.stage-height 240))]
+          (if (>= (or (?. state.player :state :misses) 0) game-over-misses)
+              (scene-manager:select! :game-over))
           (gfx.setDrawOffset (- 0 center-x) (- 0 center-y))
           (gfx.sprite.performOnAllSprites (fn react-each [ent]
                                             (if (?. ent :react!) (ent:react! $scene))))

@@ -162,14 +162,11 @@
                                 _ [(+ x (div width 2)) (+ 8 height y)])
           [facing-sprite & _] (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect facing-x facing-y 16 16))]
                                 (if (?. x :interact!) x))
-          pickup-time (if (?. state :picked-up) (- (?. state :pickup-time) 1)
-                          0)
           ]
       ;; Figure out how to counteract accel with drag
       (tset self :state :dx dx)
       (tset self :state :dy dy)
       (tset self :state :facing new-facing)
-      (tset self :state :pickup-time pickup-time)
       (tset self :state :walking? (not (and (= 0 dx) (= 0 dy))))
 
       ;; (if (playdate.buttonJustPressed playdate.kButtonA)
@@ -184,8 +181,7 @@
   (fn pickup! [self passenger]
     (do
       (tset self :state :picked-up true)
-      (tset self :state :passenger passenger)
-      (tset self :state :pickup-time (* 30 90)))
+      (tset self :state :passenger passenger))
     )
 
   ;; Returns the target x y for a following passenger based on
@@ -240,7 +236,7 @@
          (tset self :state :picked-up false)
          (if passenger
              (do (passenger:transfer! first-collision)
-                 (tset self :state :passenger nil)))
+                 (self:dropoff!)))
          )
        (> count 0)
        (do
@@ -270,11 +266,26 @@
       (self:setImage (animation:getImage)))
     )
 
+
+
   ;; (fn draw [{:state {: animation : dx : dy : visible : walking?} &as self} x y w h]
   ;;   ;; (love.graphics.rectangle "fill" x y w h)
   ;;   ;; Playdate version weird here:
   ;;   (animation:draw x y)
   ;;   )
+
+  (fn dropoff! [self val]
+    (let [val (or val 0)]
+      (if (< val 0)
+          (do
+            ($particles:frown!)
+            (tset self :state :misses (- self.state.misses val)))
+          (do
+            ($particles:plus!)
+            (tset self :state :score (+ self.state.score val))
+            )
+          )
+      (tset self :state :passenger nil)))
 
   (fn collisionResponse [self other]
     (if (or other.door? other.dropoff? other.pickup?)
@@ -312,6 +323,7 @@
           (tset player :react! react!)
           (tset player :boost! boost!)
           (tset player :pickup! pickup!)
+          (tset player :dropoff! dropoff!)
           (tset player :algo-1 algo-1)
           (tset player :algo-2 algo-2)
           (tset player :algo-3 algo-3)
@@ -319,6 +331,7 @@
           (tset player :state {: animation :speed 2
                                :dx 0 :dy 0 :degrees 180
                                :mx 0 :my 0 :meter 1 :boost-ticks 0
+                               :misses 0 :score 0
                                :real-x x :real-y y
                                :visible true})
           player))))
