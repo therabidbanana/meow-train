@@ -46,16 +46,25 @@
     (if (?. state :text) ($ui:open-textbox! {:text state.text })))
 
   (fn new! [x y {: tile-h : tile-w : fields}]
-    (let [image (gfx.imagetable.new :assets/images/pineapple-walk)
-          animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300 :transition-to :blinking}
-                                                {:state :blinking :start 2 :end 3 :delay 300 :transition-to :pace}
-                                                {:state :pace :start 4 :end 5 :delay 500 :transition-to :standing}
-                                                {:state :walking :start 4 :end 5}]})
+    (let [roll (math.random 1 100)
+          image (if (> roll 95)
+                    (gfx.imagetable.new :assets/images/pineapple-walk)
+                    (> roll 80)
+                    (gfx.imagetable.new :assets/images/bear)
+                    (> roll 60)
+                    (gfx.imagetable.new :assets/images/rabbit)
+                    (> roll 40)
+                    (gfx.imagetable.new :assets/images/frog-woman)
+                    ;; else
+                    (gfx.imagetable.new :assets/images/cat-woman)
+                    )
+          animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300}
+                                                {:state :walking :start 1 :end 3}]})
           player (gfx.sprite.new)]
       (player:setCenter 0 0)
-      (player:setBounds x y 32 32)
+      (player:setBounds x y 48 48)
       ;; (player:setCollideRect 6 1 18 30)
-      (player:setCollideRect 4 8 24 24)
+      (player:setCollideRect 8 8 30 30)
       (player:setGroups [3])
       (player:setCollidesWithGroups [1 4])
       (tset player :draw draw)
