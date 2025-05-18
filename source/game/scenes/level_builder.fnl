@@ -11,7 +11,7 @@
    scene-manager (require :source.lib.scene-manager)
    ]
 
-  (fn stage-tick! [{: state &as $scene}]
+  (fn stage-tick! [{: state &as $scene} game-state]
     (if ($ui:active?) ($ui:tick!) ;; tick if open
         (let [player-x state.player.x
               player-y state.player.y
@@ -24,7 +24,7 @@
               (scene-manager:select! :game-over))
           (gfx.setDrawOffset (- 0 center-x) (- 0 center-y))
           (gfx.sprite.performOnAllSprites (fn react-each [ent]
-                                            (if (?. ent :react!) (ent:react! $scene))))
+                                            (if (?. ent :react!) (ent:react! $scene game-state))))
           )
         ))
 

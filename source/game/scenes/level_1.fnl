@@ -20,8 +20,8 @@
 
   (fn draw! [$scene] (stage-draw! $scene))
 
-  (fn tick! [{: state &as $scene}]
-    (stage-tick! $scene))
+  (fn tick! [{: state &as $scene} game-state]
+    (stage-tick! $scene game-state))
 
   (fn debug-draw! [$]
     (gfx.sprite.performOnAllSprites
