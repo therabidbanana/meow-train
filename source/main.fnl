@@ -14,8 +14,12 @@
 (pd/load
  [{: scene-manager} (require :source.lib.core)]
  (fn load-hook []
-   (scene-manager:load-scenes! (require :source.game.scenes))
-   (scene-manager:select! :menu)
+   (let [music-loop (playdate.sound.fileplayer.new :assets/sounds/meow-train-v1)]
+     (doto music-loop
+       (: :setVolume 0.3)
+       (: :play 0))
+     (scene-manager:load-scenes! (require :source.game.scenes))
+     (scene-manager:select! :menu))
    )
  (fn update-hook []
    (scene-manager:tick!)

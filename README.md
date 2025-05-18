@@ -1,3 +1,4 @@
+
 # Meow Train
 
 Collision Groups
@@ -6,6 +7,10 @@ Collision Groups
 2 - ???
 3 - npcs
 4 - walls
+
+# Assets
+
+Music samples from mobygratis.com (fight like a child)
 
 # Playdate Fennel Starter
 
