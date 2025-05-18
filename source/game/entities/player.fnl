@@ -147,7 +147,9 @@
                            (> (math.abs accel) 1) 0.1
                            0
                        )
-          (dx dy)  (run-algo self dir-x dir-y boost-factor)
+          (dx dy)  (if (> self.state.recover-ticks 0)
+                       (values 0 0)
+                       (run-algo self dir-x dir-y boost-factor))
           magx (math.abs dx)
           magy (math.abs dy)
           new-facing (if (and (>= magy magx) (> dy 0)) :down
@@ -164,6 +166,8 @@
                                 (if (?. x :interact!) x))
           ]
       ;; Figure out how to counteract accel with drag
+      (if (> self.state.recover-ticks 0)
+          (tset self :state :recover-ticks (- self.state.recover-ticks 1)))
       (tset self :state :dx dx)
       (tset self :state :dy dy)
       (tset self :state :facing new-facing)
@@ -245,6 +249,8 @@
          (tset self :state :real-y y)
          (tset self :state :mx 0)
          (tset self :state :my 0)
+         (if (> self.state.meter 60)
+             (tset self :state :recover-ticks 30))
          (tset self :state :meter (/ self.state.meter 2))
          )
        (do
@@ -263,6 +269,9 @@
                                    :right :standing-right
                                    :up :standing-up
                                    _ :standing)))
+      (if (= (math.fmod self.state.recover-ticks 3) 1)
+          (self:setVisible false)
+          (self:setVisible true))
       (self:setImage (animation:getImage)))
     )
 
@@ -331,7 +340,7 @@
           (tset player :state {: animation :speed 2
                                :dx 0 :dy 0 :degrees 180
                                :mx 0 :my 0 :meter 1 :boost-ticks 0
-                               :misses 0 :score 0
+                               :misses 0 :score 0 :recover-ticks 0
                                :real-x x :real-y y
                                :visible true})
           player))))
