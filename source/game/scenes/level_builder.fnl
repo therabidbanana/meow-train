@@ -16,7 +16,7 @@
         (let [player-x state.player.x
               player-y state.player.y
 
-              game-over-misses 1
+              game-over-misses 3
 
               center-x (clamp 0 (- player-x 200) (- state.stage-width 400))
               center-y (clamp 0 (- player-y 120) (- state.stage-height 240))]
