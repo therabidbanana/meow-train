@@ -1,44 +1,35 @@
 (import-macros {: pd/import : defns : inspect} :source.lib.macros)
-(import-macros {: deflevel} :source.lib.ldtk.macros)
 
-(deflevel :level_0
-  [{:player player-ent} (require :source.game.entities.core)
-   ldtk (require :source.lib.ldtk.loader)
-   {: prepare-level} (require :source.lib.level)
+(defns :TitleScreen
+  [$ui (require :source.lib.ui)
+   scene-manager (require :source.lib.scene-manager)
    pd playdate
    gfx pd.graphics]
 
   (fn enter! [$]
-    (let [player (player-ent.new! 20 20)
-          ;; Option 1 - Loads at runtime
-          ;; loaded (prepare-level (ldtk.load-level {:level 0}))
-          ;; Option 2 - relies on deflevel compiling
-          loaded (prepare-level level_0)
-          layer (?. loaded :tile-layers 1)
-          entities (?. loaded :entity-layers 1)
-          bg (gfx.sprite.new)
+    (let [img (gfx.image.new :assets/images/title-screen)
           ]
-      (each [_ {: id : x : y} (ipairs entities.entities)]
-        (case id
-          :player_start (-> (player-ent.new! x y) (: :add))))
-      (bg:setTilemap layer.tilemap)
-      (bg:setCenter 0 0)
-      (bg:moveTo 0 0)
-      (bg:setZIndex -100)
-      (tset $ :layer layer)
-      ;; (player:add)
-      (bg:add)
-      ;; (printTable (ldtk.load-level {:level 0}))
+      (tset $ :state {})
+      (tset $ :state :bg-anim (playdate.graphics.animator.new 2500 0 1 playdate.easingFunctions.inCubic))
+      (tset $ :state :bg img)
+      ;; (start:moveTo 200 210)
+      ;; (start:setZIndex 100)
+      ;; (start:add)
       )
     )
 
-  (fn exit! [$])
+  (fn exit! [$]
+    (tset $ :state {})
+    )
 
   (fn tick! [$]
-    (gfx.sprite.performOnAllSprites (fn react-each [ent]
-                                      (if (?. ent :react!) (ent:react!)))))
+    (if ($ui:active?) ($ui:tick!)
+        (playdate.buttonJustPressed playdate.kButtonA)
+        (scene-manager:select! :level_0))
+    )
   (fn draw! [$]
+    (gfx.clear)
+    ($.state.bg:drawFaded 0 0 ($.state.bg-anim:currentValue) gfx.image.kDitherTypeFloydSteinberg)
     ;; ($.layer.tilemap:draw 0 0)
     )
   )
-

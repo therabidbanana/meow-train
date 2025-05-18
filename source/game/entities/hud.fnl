@@ -88,6 +88,7 @@
       (hud:setCenter 0 0)
       (hud:setSize 400 240)
       (hud:moveTo 0 0)
+      (hud:setZIndex 100)
       (tset hud :state {: player : score-font :score 0 :misses 0 : frown-image})
       (tset hud :draw draw)
       (tset hud :update update)

@@ -19,7 +19,7 @@
        (: :setVolume 0.2)
        (: :play 0))
      (scene-manager:load-scenes! (require :source.game.scenes))
-     (scene-manager:select! :menu))
+     (scene-manager:select! :logo))
    )
  (fn update-hook []
    (scene-manager:tick!)

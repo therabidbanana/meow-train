@@ -344,7 +344,7 @@
           (tset player :algo-1 algo-1)
           (tset player :algo-2 algo-2)
           (tset player :algo-3 algo-3)
-          (tset player :run-algo (?. player game-state.run-algo))
+          (tset player :run-algo (?. player :algo-1))
           (tset player :state {: animation : sounds :speed 2
                                :dx 0 :dy 0 :degrees 180
                                :mx 0 :my 0 :meter 1 :boost-ticks 0
