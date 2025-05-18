@@ -215,7 +215,7 @@
         )
     self)
 
-  (fn update [{:state {: passenger : animation : real-x : real-y : dx : dy : walking?} &as self}]
+  (fn update [{:state {: sounds : passenger : animation : real-x : real-y : dx : dy : walking?} &as self}]
     (let [new-x (+ dx real-x)
           new-y (+ dy real-y)
           target-x (math.floor new-x)
@@ -250,7 +250,12 @@
          (tset self :state :mx 0)
          (tset self :state :my 0)
          (if (> self.state.meter 60)
-             (tset self :state :recover-ticks 30))
+             (do
+               (if (not (sounds.ouch:isPlaying))
+                   (sounds.ouch:play))
+               (tset self :state :recover-ticks 30))
+             (if (not (sounds.oof:isPlaying))
+                 (sounds.oof:play)))
          (tset self :state :meter (/ self.state.meter 2))
          )
        (do
@@ -305,6 +310,9 @@
   (fn new! [x y {: tile-w : tile-h : game-state &as extras}]
     (if (not (?. game-state :player))
         (let [image (gfx.imagetable.new :assets/images/player)
+
+              sounds {:oof  (playdate.sound.sampleplayer.new (.. :assets/sounds/oof))
+                      :ouch (playdate.sound.sampleplayer.new (.. :assets/sounds/ouchie))}
               animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :transition-to :blink :delay 1700}
                                                     {:state :blink :start 6 :end 6 :transition-to :standing :delay 150}
                                                     {:state :walking-down :start 1 :end 6}
@@ -337,7 +345,7 @@
           (tset player :algo-2 algo-2)
           (tset player :algo-3 algo-3)
           (tset player :run-algo (?. player game-state.run-algo))
-          (tset player :state {: animation :speed 2
+          (tset player :state {: animation : sounds :speed 2
                                :dx 0 :dy 0 :degrees 180
                                :mx 0 :my 0 :meter 1 :boost-ticks 0
                                :misses 0 :score 0 :recover-ticks 0

@@ -84,6 +84,8 @@
     )
 
   (fn give-up! [self]
+    (if (not (self.state.sounds.ohno:isPlaying))
+        (self.state.sounds.ohno:play 1))
     ($ui:open-textbox! {:text (.. "Looks like I missed my train. :(")
                         :action (fn []
                                   ($particles.frustration! self.x self.y)
@@ -94,6 +96,8 @@
 
   (fn interact! [self player]
     (let [time (* self.state.expected-time 30)]
+      (if (not (self.state.sounds.start:isPlaying))
+          (self.state.sounds.start:play 1))
       ($ui:open-textbox! {:text (.. "I need to get to platform " self.state.platform " in " self.state.expected-time " seconds!")
                           :action #(do (player:pickup! self)
                                        (self:follow! player time))}))
@@ -124,6 +128,8 @@
                     )
           animation (anim.new {: image :states [{:state :standing :start 1 :end 1 :delay 2300}
                                                 {:state :walking :start 1 :end 3}]})
+          sounds {:start  (playdate.sound.sampleplayer.new (.. :assets/sounds/right-meow))
+                  :ohno (playdate.sound.sampleplayer.new (.. :assets/sounds/catastrophe))}
           player (gfx.sprite.new)
           ;; TODO - extract "sample" helper
           target (inspect (?. platforms (math.random (length platforms))))
@@ -143,6 +149,7 @@
       (tset player :give-up! give-up!)
       (tset player :interact! interact!)
       (tset player :state {: animation :platform target
+                           : sounds
                            :pickup-time -1
                            :expected-time (clamp 20 (- 90 (* spawned-count 5)) 90)
                            :speed 2 :dx 0 :dy 0 :visible true :bubble-timer 30})

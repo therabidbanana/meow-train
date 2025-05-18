@@ -16,7 +16,7 @@
  (fn load-hook []
    (let [music-loop (playdate.sound.fileplayer.new :assets/sounds/meow-train-v1)]
      (doto music-loop
-       (: :setVolume 0.3)
+       (: :setVolume 0.2)
        (: :play 0))
      (scene-manager:load-scenes! (require :source.game.scenes))
      (scene-manager:select! :menu))
