@@ -10,7 +10,13 @@
   (local state {})
 
   (fn enter! [$ game-state]
-    ($ui:open-textbox! {:text (.. "Your score was " game-state.player.state.score)})
+    (let [img (gfx.image.new :assets/images/game-over)
+          ]
+      (tset $ :state {})
+      (tset $ :state :bg-anim (playdate.graphics.animator.new 2500 0 1 playdate.easingFunctions.inCubic))
+      (tset $ :state :bg img)
+      ($ui:open-textbox! {:text (.. "Your score was " (or (?. game-state :player :state :score) 0))})
+      )
     ;; (tset $ :state :listview (testScroll pd gfx))
     )
 
@@ -24,11 +30,14 @@
     ;; (listview:drawInRect 180 20 200 200)
     (if ($ui:active?) ($ui:tick!)
         (let [pressed? playdate.buttonJustPressed]
-          (if (pressed? playdate.kButtonA) (scene-manager:select! :menu)))
+          (if (pressed? playdate.kButtonA) (scene-manager:select! :title)))
         ))
-  (fn draw! [{:state {: listview} &as $}]
+
+  (fn draw! [$]
+    (gfx.clear)
+    ($.state.bg:drawFaded 0 0 ($.state.bg-anim:currentValue) gfx.image.kDitherTypeFloydSteinberg)
     ($ui:render!)
-    ;; (listview:drawInRect 180 20 200 200)
+    ;; ($.layer.tilemap:draw 0 0)
     )
   )
 

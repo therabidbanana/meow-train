@@ -9,7 +9,7 @@
           new-timer (if (and (< state.spawn-timer 1) will-spawn?)
                         (* (math.random 30 45) 30)
                         (< state.spawn-timer 1)
-                        (* (math.random 5 15) 30)
+                        (* (math.random 3 5) 30)
                         (- state.spawn-timer 1)
                         )
           sprites (icollect [_ x (ipairs (gfx.sprite.querySpritesInRect self.x self.y 16 16))]
